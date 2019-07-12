@@ -12,19 +12,44 @@ public class Exemplo {
 		EntityManagerFactory entityManagerFactory = Persistence
                 .createEntityManagerFactory("Clientes-PU");
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-
+// Inserte
 //		Cliente cliente = entityManager.find(Cliente.class, 1);
-//		System.out.println(cliente.getNome());
-		Cliente c = new Cliente();
-		//c.setId(1);
-		c.setNome("Autopecas estrada");
-		entityManager.getTransaction().begin();
-		entityManager.persist(c);
-		entityManager.getTransaction().commit();
-		
-		
+//		Cliente c = new Cliente();
+//		c.setId(1);
+//		c.setNome("Autopecas estrada");
+//		entityManager.getTransaction().begin();
+//		entityManager.persist(c);
+//		entityManager.getTransaction().commit();
+
+        
+//      Delete  
+//		Cliente c = entityManager.find(Cliente.class, 2);
+//		entityManager.getTransaction().begin();
+//		entityManager.remove(c);
+//		entityManager.getTransaction().commit();
+        
+        //Update
+//        Cliente c = entityManager.find(Cliente.class, 3);
+//        entityManager.getTransaction().begin();
+//        c.setNome(c.getNome() + " Alterado");
+//        entityManager.getTransaction().commit();
+//        
+//		entityManager.close();
+//		entityManagerFactory.close();
+        
+        Cliente c = new Cliente();
+        c.setId(3);
+        c.setNome("Construtora alterado");
+        
+        
+        
+        entityManager.getTransaction().begin();
+        entityManager.merge(c);
+        entityManager.getTransaction().commit();
+        
 		entityManager.close();
 		entityManagerFactory.close();
+        
 	}
 
 }
