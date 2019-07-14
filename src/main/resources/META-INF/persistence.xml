@@ -4,14 +4,18 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
              version="2.2">
 
-     <persistence-unit name="Clientes-PU" >
+     <persistence-unit name="Usuarios-PU" >
     
         <properties>
         	
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/cadastrocliente?useTimezone=true&amp;serverTimezone=UTC" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/cadastrousuarios?useTimezone=true&amp;serverTimezone=UTC" />
             <property name="javax.persistence.jdbc.user" value="root" />
             <property name="javax.persistence.jdbc.password" value="" />
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
+              <property name="javax.persistence.schema-generation.database.action"
+                      value="drop-and-create"/>
+            <property name="javax.persistence.sql-load-script-source"
+                      value="META-INF/banco-de-dados/carregar-dados.sql" />
 
              <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
                
