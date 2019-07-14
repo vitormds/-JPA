@@ -26,7 +26,14 @@ public class ConsultasComJPQL {
 //       esconhendoRetorno(entityManager);
 //       fazendoProjecoes(entityManager);
 //       passandoParametros(entityManager);
-
+//       fazendoJoins(entityManager);
+//       fazendoLeftJoin(entityManager);
+//       carregamentoComJoinFetch(entityManager);
+//       filtrandoRegistros(entityManager);
+//       ultilizandoOperadoresLogicos(entityManager);
+//       ultilizandoOperadorIn(entityManager);
+//          ordenandoResultados(entityManager);
+       		paginacaoResultados(entityManager);
        
           
          entityManager.close();
@@ -35,7 +42,100 @@ public class ConsultasComJPQL {
     
     
     
-   
+    private static void paginacaoResultados(EntityManager entityManager) {
+    	
+    		//String jpql = "select u from Usuario u where u.dominio.nome like :nomeDominio order by u.dominio.nome";
+        	String jpql = "select u from Usuario u order by u.nome";
+    		TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class)
+    				.setFirstResult(4)
+    				.setMaxResults(2);
+    		List<Usuario> lista = typedQuery.getResultList();
+    		lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
+    		
+    	}
+    private static void ordenandoResultados(EntityManager entityManager) {	
+		//String jpql = "select u from Usuario u where u.dominio.nome like :nomeDominio order by u.dominio.nome";
+    	String jpql = "select u from Usuario u order by u.nome";
+		TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class);
+		List<Usuario> lista = typedQuery.getResultList();
+		lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
+		
+	}
+    
+    private static void ultilizandoOperadorIn (EntityManager entityManager) {
+		String jpql = "select u from Usuario u where u.id  in (:ids)";
+		TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class).setParameter("ids", Arrays.asList(1,2));
+		List<Usuario> lista = typedQuery.getResultList();
+		lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
+		
+	}
+    private static void ultilizandoOperadoresLogicos(EntityManager entityManager) {
+    	
+    			String jpql = "select u from Usuario u where (u.ultimoAcesso > :ontem and u.ultimoAcesso < :hoje) "
+    					+ "or u.ultimoAcesso is null";
+    			TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class)
+    	    	.setParameter("ontem", LocalDateTime.now().minusDays(1))
+    	    	.setParameter("hoje", LocalDateTime.now());
+    	    	List<Usuario> lista = typedQuery.getResultList();
+    	    	lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
+		
+	}
+	private static void filtrandoRegistros(EntityManager entityManager) {
+		// Like, Is null, is empty, between, >, <, >=, <=, =, <>
+    	//is null = select u from Usuario u where u.senha is null
+    	// is empty = select d from Dominio d where u.usuarios is empty
+    	// like =String jpql = "select u from Usuario u where u.nome like :nomeUsuario";
+       	// between = 
+    	
+    	String jpql = "select u from Usuario u where u.ultimoAcesso between :ontem and :hoje";
+    	TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class)
+    	.setParameter("ontem", LocalDateTime.now().minusDays(1))
+    	.setParameter("hoje", LocalDateTime.now());
+    	List<Usuario> lista = typedQuery.getResultList();
+    	lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
+    	
+		
+	}
+	// para não trazer tudo usar fetch
+	private static void carregamentoComJoinFetch(EntityManager entityManager) {
+		String jpql = "select u from Usuario u join fetch u.configuracao join fetch u.dominio d";
+		TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class);
+		List<Usuario> lista = typedQuery.getResultList();
+		lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
+		
+	}
+
+	private static void fazendoLeftJoin(EntityManager entityManager) {
+		String jpql = "select u, c from Usuario u left join u.configuracao c";
+		TypedQuery<Object[]> typedQuery = entityManager.createQuery(jpql, Object[].class);
+		List<Object[]> lista = typedQuery.getResultList();
+		lista.forEach(arr -> {
+			// arr[0] == Usuario
+			// arr[1] == Configuracao
+			String out = ((Usuario) arr[0]).getNome();
+			if(arr[1] == null) {
+				out += ", null";
+			}else {
+				out += ", "+((Configuracao) arr[1]).getId();
+			}
+			System.out.println(out);
+			
+		}
+		 		
+				
+				
+		);
+		
+	}
+
+	private static void fazendoJoins(EntityManager entityManager) {	
+		 String jpql = "select u from Usuario u join u.dominio d where d.id =1";
+		 TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class);
+		 List<Usuario> lista = typedQuery.getResultList();
+		 lista.forEach(u -> System.out.println(u.getId() +", "+ u.getNome()));
+		
+		 
+	}
 
 	private static void passandoParametros(EntityManager entityManager) {
 		String jpql = "select u from Usuario u where u.id = :idUsuario";
