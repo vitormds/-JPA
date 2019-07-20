@@ -7,8 +7,12 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import org.hibernate.sql.Select;
 
 import com.jpql.algaworks.sistemausuario.Configuracao;
 import com.jpql.algaworks.sistemausuario.Dominio;
@@ -22,18 +26,18 @@ public class ConsultasComJPQL {
                .createEntityManagerFactory("Usuarios-PU");
        EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-//       primeirasConsultas(entityManager);
-//       esconhendoRetorno(entityManager);
-//       fazendoProjecoes(entityManager);
-//       passandoParametros(entityManager);
+       primeiraConsulta(entityManager);
+  //       esconhendoRetorno(entityManager);
+  //     fazendoProjecoes(entityManager);
+     //  passandoParametros(entityManager);
 //       fazendoJoins(entityManager);
 //       fazendoLeftJoin(entityManager);
 //       carregamentoComJoinFetch(entityManager);
 //       filtrandoRegistros(entityManager);
 //       ultilizandoOperadoresLogicos(entityManager);
 //       ultilizandoOperadorIn(entityManager);
-//          ordenandoResultados(entityManager);
-       		paginacaoResultados(entityManager);
+ //   ordenandoResultados(entityManager);
+       	//	paginacaoResultados(entityManager);
        
           
          entityManager.close();
@@ -54,12 +58,24 @@ public class ConsultasComJPQL {
     		
     	}
     private static void ordenandoResultados(EntityManager entityManager) {	
+    	
+    	CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    	CriteriaQuery<Usuario> criteriaQuery = criteriaBuilder.createQuery(Usuario.class);
+    	Root<Usuario> root = criteriaQuery.from(Usuario.class);
+    	criteriaQuery.select(root);
+    	criteriaQuery.orderBy(criteriaBuilder.asc(root.get("nome")));
+    	TypedQuery<Usuario> typedQuery = entityManager.createQuery(criteriaQuery);
+    	List<Usuario> lista = typedQuery.getResultList();
+    	lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
+    	
+    	
+    	
 		//String jpql = "select u from Usuario u where u.dominio.nome like :nomeDominio order by u.dominio.nome";
-    	String jpql = "select u from Usuario u order by u.nome";
-		TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class);
-		List<Usuario> lista = typedQuery.getResultList();
-		lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
-		
+//    	String jpql = "select u from Usuario u order by u.nome";
+//		TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class);
+//		List<Usuario> lista = typedQuery.getResultList();
+//		lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
+//		
 	}
     
     private static void ultilizandoOperadorIn (EntityManager entityManager) {
@@ -138,7 +154,33 @@ public class ConsultasComJPQL {
 	}
 
 	private static void passandoParametros(EntityManager entityManager) {
-		String jpql = "select u from Usuario u where u.id = :idUsuario";
+
+
+		
+		
+		
+//		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//		CriteriaQuery<Usuario> criteriaQuery = criteriaBuilder.createQuery(Usuario.class);
+//		Root<Usuario> root = criteriaQuery.from(Usuario.class);
+//		criteriaQuery.select(root);
+//		criteriaQuery.where(criteriaBuilder.equal(root.get("login"), "ria"));
+//		TypedQuery<Usuario> typedQuery = entityManager.createQuery(criteriaQuery);
+//		Usuario u = typedQuery.getSingleResult();
+//		System.out.println(u.getId() + ", " + u.getNome());
+		
+		 
+		
+//		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//		CriteriaQuery<Usuario> criteriaQuery = criteriaBuilder.createQuery(Usuario.class);
+//		Root<Usuario> root = criteriaQuery.from(Usuario.class);
+//		criteriaQuery.select(root);
+//		criteriaQuery.where(criteriaBuilder.equal(root.get("id"), 1));
+//		TypedQuery<Usuario> typedQuery = entityManager.createQuery(criteriaQuery);
+//		Usuario u = typedQuery.getSingleResult();
+//		System.out.println(u.getId() + ", " + u.getNome());
+		
+		
+		/*String jpql = "select u from Usuario u where u.id = :idUsuario";
 		TypedQuery<Usuario> query = entityManager.createQuery(jpql, Usuario.class)
 		.setParameter("idUsuario", 1);
 		Usuario u = query.getSingleResult();
@@ -149,27 +191,62 @@ public class ConsultasComJPQL {
 		TypedQuery<Usuario> queryLogin = entityManager.createQuery(jpqlLogin, Usuario.class)
 		.setParameter("idLogin", "ria");
 		Usuario uLogin = queryLogin.getSingleResult();
-		System.out.println(uLogin.getId() + ", " + uLogin.getNome());
+		System.out.println(uLogin.getId() + ", " + uLogin.getNome());*/
 	}
 
 	private static void fazendoProjecoes(EntityManager entityManager) {
 		
-		 String jpqlArr = "select id, login, nome from Usuario";
-		 TypedQuery<Object[]> queryArr = entityManager.createQuery(jpqlArr, Object[].class);
-		 List<Object[]> listArr = queryArr.getResultList();
-		 listArr.forEach(arr -> System.out.println(String.format("%s, %s, %s", arr)));
-		 
-		 
-		 String jpqlDto = "select new com.jpql.algaworks.sistemausuario.dto.UsuarioDTO(id, login, nome) from Usuario";
-		 TypedQuery<UsuarioDTO> typedQueryDto = entityManager.createQuery(jpqlDto, UsuarioDTO.class);
-		 List<UsuarioDTO> listDto =typedQueryDto.getResultList();
-		 listDto.forEach(u -> System.out.println("DTO: "+u.getId() + ", "+u.getLogin()+", " + u.getNome()));
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		
+		//Consulta com parametros
+//		CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
+//		Root<Usuario> root = criteriaQuery.from(Usuario.class);
+//		criteriaQuery.multiselect(root.get("id"), root.get("login"), root.get("nome"));
+//		TypedQuery<Object[]> typedQuery = entityManager.createQuery(criteriaQuery);
+//		List<Object[]> lista = typedQuery.getResultList();
+//		lista.forEach(arr -> System.out.println(String.format("%s, %s, %s", arr)));
+		
+		
+		CriteriaQuery<UsuarioDTO> criteriaQuery = criteriaBuilder.createQuery(UsuarioDTO.class);
+		Root<Usuario> root = criteriaQuery.from(Usuario.class);
+		criteriaQuery.select(criteriaBuilder.construct(UsuarioDTO.class, root.get("id"), root.get("login"), root.get("nome")));
+		TypedQuery<UsuarioDTO> typedQuery = entityManager.createQuery(criteriaQuery);
+		List<UsuarioDTO> lista = typedQuery.getResultList();
+		lista.forEach(u -> System.out.println("DTO: "+u.getId() + ", "+u.getLogin()+", " + u.getNome()));
+		
+		
+//		 String jpqlArr = "select id, login, nome from Usuario";
+//		 TypedQuery<Object[]> queryArr = entityManager.createQuery(jpqlArr, Object[].class);
+//		 List<Object[]> listArr = queryArr.getResultList();
+//		 listArr.forEach(arr -> System.out.println(String.format("%s, %s, %s", arr)));
+//		 
+//		 
+//		 String jpqlDto = "select new com.jpql.algaworks.sistemausuario.dto.UsuarioDTO(id, login, nome) from Usuario";
+//		 TypedQuery<UsuarioDTO> typedQueryDto = entityManager.createQuery(jpqlDto, UsuarioDTO.class);
+//		 List<UsuarioDTO> listDto =typedQueryDto.getResultList();
+//		 listDto.forEach(u -> System.out.println("DTO: "+u.getId() + ", "+u.getLogin()+", " + u.getNome()));
 		
 	}
 
 	private static void esconhendoRetorno(EntityManager entityManager) {
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		// Buscar usuário por dominio
+//		CriteriaQuery<Dominio> criteriaQuery = criteriaBuilder.createQuery(Dominio.class);
+//		Root<Usuario> root = criteriaQuery.from(Usuario.class);
+//		criteriaQuery.select(root.get("dominio"));
+//		TypedQuery<Dominio> typedQuery = entityManager.createQuery(criteriaQuery);
+//		List<Dominio> lista = typedQuery.getResultList();
+//		lista.forEach(d -> System.out.println(d.getId() + ", " + d.getNome()));
 		
-		String jpql = "select u.dominio from Usuario u where u.id =1";
+		//Buscar usuário por nome
+		CriteriaQuery<String> criteriaQuery = criteriaBuilder.createQuery(String.class);
+		Root<Usuario> root = criteriaQuery.from(Usuario.class);
+		criteriaQuery.select(root.get("nome"));
+		TypedQuery<String> typedQuery = entityManager.createQuery(criteriaQuery);
+		List<String> lista = typedQuery.getResultList();
+		lista.forEach(nome -> System.out.println("Nome: "+ nome));
+		
+				/*String jpql = "select u.dominio from Usuario u where u.id =1";
 		TypedQuery<Dominio> typedQuery = entityManager.createQuery(jpql, Dominio.class);
 		Dominio dominio = typedQuery.getSingleResult();
 		System.out.println(dominio.getId() + ", " + dominio.getNome());
@@ -178,30 +255,42 @@ public class ConsultasComJPQL {
 		String jpqlNomes = "select u.nome from Usuario u";
 		TypedQuery<String> typedQueryNomes = entityManager.createQuery(jpqlNomes, String.class);
 		List<String> lista = typedQueryNomes.getResultList();
-		lista.forEach(nome -> System.out.println(nome));
+		lista.forEach(nome -> System.out.println(nome));*/
 		
 	}
 
-	private static void primeirasConsultas(EntityManager entityManager) {
+	private static void primeiraConsulta  (EntityManager entityManager) {
 		
-		
+ // Criteria
+	CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+	CriteriaQuery<Usuario> criteriaQuery = criteriaBuilder.createQuery(Usuario.class);
+	Root<Usuario> root = criteriaQuery.from(Usuario.class);
+	criteriaQuery.select(root);
+	TypedQuery<Usuario> typedQuery = entityManager.createQuery(criteriaQuery)
+	.setFirstResult(0) //PRIMEIRO = (PAGINA - 1) * QTDE_PAG
+	.setMaxResults(2); 
+	List<Usuario> lista = typedQuery.getResultList();
+	lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
+	
+//	String jpql = "select u from Usuario u";
+//	TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class);
+//	List<Usuario> lista = typedQuery.getResultList();
+//	lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
 
-		String jpql = "select u from Usuario u";
-		TypedQuery<Usuario> typedQuery = entityManager.createQuery(jpql, Usuario.class);
-		List<Usuario> lista = typedQuery.getResultList();
-		lista.forEach(u -> System.out.println(u.getId() + ", " + u.getNome()));
-		
-		String jpqlSingle = "select u from Usuario u where u.id = 1";
-		TypedQuery<Usuario> typedQuerySingle = entityManager.createQuery(jpqlSingle, Usuario.class);
-		Usuario u= typedQuerySingle.getSingleResult();
-		System.out.println(u.getId()+ ", " + u.getNome());
-		
-		
-		//Query antiga
-		String jpqlSing = "select u from Usuario u where u.id = 1";
-		Query query = entityManager.createQuery(jpqlSing);
-		Usuario usuario = (Usuario) query.getSingleResult();
-		System.out.println(usuario.getId()+ ", " + usuario .getNome());
+	
+
+	
+//		String jpqlSingle = "select u from Usuario u where u.id = 1";
+//		TypedQuery<Usuario> typedQuerySingle = entityManager.createQuery(jpqlSingle, Usuario.class);
+//		Usuario u= typedQuerySingle.getSingleResult();
+//		System.out.println(u.getId()+ ", " + u.getNome());
+//		
+//		
+//		//Query antiga
+//		String jpqlSing = "select u from Usuario u where u.id = 1";
+//		Query query = entityManager.createQuery(jpqlSing);
+//		Usuario usuario = (Usuario) query.getSingleResult();
+//		System.out.println(usuario.getId()+ ", " + usuario .getNome());
 		
 	}
 }
